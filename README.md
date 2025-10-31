@@ -1,5 +1,5 @@
 # dbt-project
-# STAGING CONVERSATIONS
+# STAGING CONVERSATIONS - stg_intercom__conversations.sql
 with raw as (
     select *
     from {{ source('intercom', 'CONVERSATIONS') }}
@@ -24,7 +24,7 @@ parsed as (
 
 select * from parsed;
 
-# STAGING CONVERSATION_PART 
+# STAGING CONVERSATION_PART - stg_intercom__conversation_parts.sql
 with raw as (
     select *
     from {{ source('intercom', 'CONVERSATION_PARTS') }}
@@ -55,4 +55,39 @@ where is_bot = 0;
 
 
 
-# MARTS
+# MARTS - fact_conversations.sql
+
+with conv as (
+    select *
+    from {{ ref('stg_intercom__conversations') }}
+),
+
+first_reply as (
+    select
+        conversation_id,
+        min(message_created_at) as first_admin_reply
+    from {{ ref('stg_intercom__conversation_parts') }}
+    where is_admin = 1
+    group by conversation_id
+)
+
+select
+    c.conversation_id,
+    c.created_at,
+    c.updated_at,
+    c.assignee_id,
+    c.rating,
+    fr.first_admin_reply,
+    datediff('minute', c.created_at, fr.first_admin_reply) as minutes_to_first_reply
+from conv c
+left join first_reply fr using (conversation_id);
+
+# MART - fact_messages.sql
+select 
+    part_id,                          -- identifiant unique du message (event Intercom)
+    conversation_id,                  -- conversation à laquelle appartient le message
+    author_id,                        -- ID de l'expéditeur (user, admin ou bot)
+    author_type,                      -- role: 'user', 'admin', 'bot'
+    message_created_at                -- timestamp d'envoi du message
+from {{ ref('stg_intercom__conversation_parts') }};  -- source = table staging events
+
