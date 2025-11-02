@@ -1,0 +1,53 @@
+# DASHBOARDS - Meeting hebdomadaire Support (Lorette)
+  Objectif: analyser la performance par période, personne, sujet + répondre à 3 questons 
+    🎯 La qualité du support est-elle au niveau attendu ?
+    🎯 L’équipe est-elle en mesure d’absorber la charge ?
+    🎯 Doit-on ajuster organisation, staffing ou formation ?
+
+  # 🧠 KPI principaux suivis ((total et par agent)
+- CSAT 
+- % 1ère réponse < 5 min 
+- Volume de conversations
+- Conversations résolues
+- Backlog ouvert	(Anticiper les capacités nécessaires)
+- Messages par conversation
+
+
+# Filtres Dynamiques 
+      📅 Période	Semaine / Mois / Année
+      👥 Membre équipe	Multi-sélection (Héloise, Justine, Patrick, Raphaël)
+      🏷️ Sujet (Tag)	Filtre par thème de conversation
+
+  # 📈 1. Volume de conversations
+      # Graphique
+        ✅ Courbe de tendance (line chart)
+        Montre le nombre de conversations résolues par jour / semaine
+        ✅ Bar chart : Répartition par agent
+
+  # ⚡ 2. Rapidité de première réponse
+      # Graphiques
+        ✅ Line chart : % conversations répondus <5 min (tendance)
+
+  # 😊 3. CSAT – Qualité du support
+      #  Graphiques
+        ✅ Courbe d’évolution CSAT
+        ✅ Bar chart comparaison CSAT par agent
+
+  # 🗓️ 4. Charge par créneau
+      # Graphique
+        ✅ Bar chart / line chart
+          Moyenne de demandes résolues par jour
+          Possibilité de voir global ou par agent
+          Dynamique selon filtre semaine/mois
+
+
+  # 🏷️ 5. Sujets des conversations
+      # Graphique
+          ✅ Barres horizontales – Top 10 tags (Badgeuse, Filtres, Contrats Employés, Absences...etc)
+
+
+
+
+
+
+      
