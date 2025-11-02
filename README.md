@@ -51,7 +51,8 @@ parsed as (
 -- remove bot messages
 select *
 from parsed
-where is_bot = 0;
+where is_bot = 0
+and part_group = 'Messages';
 
 # MART - csm_team.sql
 select *
@@ -75,6 +76,7 @@ first_reply as (
         min(message_created_at) as first_admin_reply
     from {{ ref('stg_intercom__conversation_parts') }}
     where is_admin = 1
+    and part_group = 'Messages'
     group by conversation_id
 )
 
@@ -102,6 +104,7 @@ left join first_reply fr using (conversation_id);
 
 # MART - mart_messages.sql
 select 
+    message_id,
     part_id,                          
     conversation_id,                  
     author_id,                        
@@ -115,7 +118,8 @@ select
     date_trunc('year', message_created_at) as year,
     extract(dow from message_created_at) as day_of_week
 
-from {{ ref('stg_intercom__conversation_parts') }}; 
+from {{ ref('stg_intercom__conversation_parts') }}
+where part_group = 'Messages'; 
 
 
 # MART - mart_support_performance.sql
