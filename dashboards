@@ -1,11 +1,11 @@
 # DASHBOARDS - Meeting hebdomadaire Support (Lorette)
   Objectif: analyser la performance par période, personne, sujet
 
-  # 🧠 KPI principaux suivis ((total et par agent)
-- CSAT 
-- % 1ère réponse < 5 min 
-- Volume de conversations
-- Conversations résolues
+  # 🧠 KPI principaux suivis (total et par agent)
+- CSAT moyen (satisfaction client)
+- % 1ère réponse < 5 min (rapidité de traitement)
+- Volume de conversations traitées par l'équipe 
+- Conversations résolues/cloturées (capacité de traitement)
 - Y a-t-il des thèmatiques significativement moins bien connus/gérés par l'équipe ? Conversations résolues par thème
 
 # Dashboard
