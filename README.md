@@ -137,4 +137,3 @@ select
 from base
 group by 1,2;
 
-
