@@ -53,6 +53,16 @@ select *
 from parsed
 where is_bot = 0;
 
+# MART - csm_team.sql
+select *
+from values
+('5217337','Heloise'),
+('5391224','Justine'),
+('5440474','Patrick'),
+('5300290','Raphael')
+as t(id, name);
+
+
 
 
 # MARTS - fact_conversations.sql
@@ -90,4 +100,27 @@ select
     author_type,                      -- role: 'user', 'admin', 'bot'
     message_created_at                -- timestamp d'envoi du message
 from {{ ref('stg_intercom__conversation_parts') }};  -- source = table staging events
+
+
+# MART - fct_support_performance.sql
+
+with base as (
+    select *
+    from {{ ref('fact_conversations') }}
+    where assignee_id in (select id from {{ ref('csm_team') }})  -- garde team support
+)
+
+select
+    assignee_id,                                      -- agent
+    date_trunc('week', created_at) as week,           -- semaine de la conv
+    
+    count(*) as total_conversations,                  -- volume
+    avg(minutes_to_first_reply) as avg_first_reply_time_min,  -- temps moyen réponse
+    avg(rating) as avg_csat,                          -- satisfaction moyenne
+    
+    sum(case when minutes_to_first_reply <= 5 then 1 else 0 end) 
+        / count(*)::float as pct_first_reply_lt_5min   -- % conversations répondue < 5min
+from base
+group by 1,2;
+
 
