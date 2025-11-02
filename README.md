@@ -86,17 +86,34 @@ select
     c.assignee_id,
     c.rating,
     fr.first_admin_reply,
-    datediff('minute', c.created_at, fr.first_admin_reply) as minutes_to_first_reply
+    datediff('minute', c.created_at, fr.first_admin_reply) as minutes_to_first_reply,
+
+    -- dimensions temporelles
+    date_trunc('day', c.created_at) as day,
+    date_trunc('week', c.created_at) as week,
+    date_trunc('month', c.created_at) as month,
+    date_trunc('year', c.created_at) as year,
+    extract(dow from c.created_at) as day_of_week
+
 from conv c
 left join first_reply fr using (conversation_id);
 
+
 # MART - mart_messages.sql
 select 
-    part_id,                          -- identifiant unique du message
-    conversation_id,                  -- conversation à laquelle appartient le message
-    author_id,                        -- ID de l'expéditeur (user, admin ou bot)
-    author_type,                      -- role: 'user', 'admin', 'bot'
-    message_created_at                -- timestamp d'envoi du message
+    part_id,                          
+    conversation_id,                  
+    author_id,                        
+    author_type,                        
+    message_created_at,
+
+    -- dimensions temporelles
+    date_trunc('day', message_created_at) as day,
+    date_trunc('week', message_created_at) as week,
+    date_trunc('month', message_created_at) as month,
+    date_trunc('year', message_created_at) as year,
+    extract(dow from message_created_at) as day_of_week
+
 from {{ ref('stg_intercom__conversation_parts') }}; 
 
 
@@ -112,10 +129,9 @@ select
     assignee_id,                                      -- agent
     date_trunc('week', created_at) as week,           -- semaine de la conv
     
-    count(*) as total_conversations,                  -- volume
+    count(distinct conversation_id) as total_conversations,           -- volume
     avg(minutes_to_first_reply) as avg_first_reply_time_min,  -- temps moyen réponse
-    avg(rating) as avg_csat,                          -- satisfaction moyenne
-    
+    avg(rating)filter (where rating is not null) as avg_csat,            -- satisfaction moyenne
     sum(case when minutes_to_first_reply <= 5 then 1 else 0 end) 
         / count(*)::float as pct_first_reply_lt_5min   -- % conversations répondue < 5min
 from base
