@@ -1,4 +1,20 @@
 # dbt-project
+
+## 📁 Structure
+```
+├── models/
+│   ├── staging/
+│   │   ├── stg_intercom__conversations.sql
+│   │   └── stg_intercom__conversation_parts.sql
+│   └── marts/
+│       ├── csm_team.sql
+│       ├── mart_conversations.sql
+│       ├── mart_messages.sql
+│       ├── mart_conversation_details.sql
+│       └── mart_support_performance.sql
+
+
+
 # STAGING CONVERSATIONS - stg_intercom__conversations.sql
 with raw as (
     select *
