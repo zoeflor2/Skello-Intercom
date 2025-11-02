@@ -63,9 +63,7 @@ from values
 as t(id, name);
 
 
-
-
-# MARTS - fact_conversations.sql
+# MARTS - mart_conversations.sql
 
 with conv as (
     select *
@@ -92,22 +90,22 @@ select
 from conv c
 left join first_reply fr using (conversation_id);
 
-# MART - fact_messages.sql
+# MART - mart_messages.sql
 select 
-    part_id,                          -- identifiant unique du message (event Intercom)
+    part_id,                          -- identifiant unique du message
     conversation_id,                  -- conversation à laquelle appartient le message
     author_id,                        -- ID de l'expéditeur (user, admin ou bot)
     author_type,                      -- role: 'user', 'admin', 'bot'
     message_created_at                -- timestamp d'envoi du message
-from {{ ref('stg_intercom__conversation_parts') }};  -- source = table staging events
+from {{ ref('stg_intercom__conversation_parts') }}; 
 
 
-# MART - fct_support_performance.sql
+# MART - mart_support_performance.sql
 
 with base as (
     select *
-    from {{ ref('fact_conversations') }}
-    where assignee_id in (select id from {{ ref('csm_team') }})  -- garde team support
+    from {{ ref('mart_conversations') }}
+    where assignee_id in (select id from {{ ref('csm_team') }})
 )
 
 select
