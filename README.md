@@ -137,3 +137,5 @@ select
 from base
 group by 1,2;
 
+## Modèle de données - marts
+<img width="680" height="455" alt="dbdiagram_marts" src="https://github.com/user-attachments/assets/42fe7af7-490b-41eb-acd4-6ae759e31971" />
