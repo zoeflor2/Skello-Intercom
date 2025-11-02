@@ -13,7 +13,6 @@ parsed as (
         state,
         open,
         priority,
-        type,
         assignee: id::string as assignee_id,
         try_to_number(conversation_rating:rating) as rating,
         conversation_rating:remark::string as rating_remark,
@@ -32,26 +31,24 @@ with raw as (
 
 parsed as (
     select
-        id::string as part_id,
+        id::string as message_id,                  -- identifiant unique du message
         conversation_id::string,
         created_at::timestamp as message_created_at,
-        type,
-        part_group,
+        part_group,                                -- type d'action (Messages, Assignment, Tag...)
         author:id::string as author_id,
         author:type::string as author_type,
-        case 
-            when author:type = 'bot' then 1 else 0 end as is_bot,
-        case 
-            when author:type = 'admin' then 1 else 0 end as is_admin,
-        case 
-            when author:type = 'user' then 1 else 0 end as is_user
+        case when author:type = 'bot' then 1 else 0 end as is_bot,
+        case when author:type = 'admin' then 1 else 0 end as is_admin,
+        case when author:type = 'user' then 1 else 0 end as is_user
     from raw
 )
 
--- remove bot messages
+-- garder uniquement les messages (filtrer bots et autres types)
 select *
 from parsed
-where is_bot = 0;
+where is_bot = 0
+  and part_group = 'Messages';
+
 
 # MART - csm_team.sql
 select *
@@ -76,6 +73,7 @@ first_reply as (
         min(message_created_at) as first_admin_reply
     from {{ ref('stg_intercom__conversation_parts') }}
     where is_admin = 1
+      and part_group = 'Messages'        -- MODIF : uniquement les messages pour calculer 1ère réponse
     group by conversation_id
 )
 
@@ -88,7 +86,7 @@ select
     fr.first_admin_reply,
     datediff('minute', c.created_at, fr.first_admin_reply) as minutes_to_first_reply,
 
-    -- dimensions temporelles
+    -- dimensions temporelles pour dashboard
     date_trunc('day', c.created_at) as day,
     date_trunc('week', c.created_at) as week,
     date_trunc('month', c.created_at) as month,
@@ -99,22 +97,23 @@ from conv c
 left join first_reply fr using (conversation_id);
 
 
+
 # MART - mart_messages.sql
 select 
-    part_id,                          
-    conversation_id,                  
-    author_id,                        
-    author_type,                        
+    message_id,                          -- identifiant unique du message
+    conversation_id,                     
+    author_id,                           
+    author_type,                         
     message_created_at,
 
-    -- dimensions temporelles
+    -- dimensions temporelles pour dashboard
     date_trunc('day', message_created_at) as day,
     date_trunc('week', message_created_at) as week,
     date_trunc('month', message_created_at) as month,
     date_trunc('year', message_created_at) as year,
     extract(dow from message_created_at) as day_of_week
 
-from {{ ref('stg_intercom__conversation_parts') }}; 
+from {{ ref('stg_intercom__conversation_parts') }};
 
 
 # MART - mart_support_performance.sql
@@ -127,15 +126,16 @@ with base as (
 
 select
     assignee_id,                                      -- agent
-    date_trunc('week', created_at) as week,           -- semaine de la conv
-    
-    count(distinct conversation_id) as total_conversations,           -- volume
+    date_trunc('week', created_at) as week,           -- semaine de la conversation
+
+    count(distinct conversation_id) as total_conversations,   -- volume
     avg(minutes_to_first_reply) as avg_first_reply_time_min,  -- temps moyen réponse
-    avg(rating)filter (where rating is not null) as avg_csat,            -- satisfaction moyenne
+    avg(rating) filter (where rating is not null) as avg_csat, -- satisfaction moyenne
     sum(case when minutes_to_first_reply <= 5 then 1 else 0 end) 
-        / count(*)::float as pct_first_reply_lt_5min   -- % conversations répondue < 5min
+        / count(*)::float as pct_first_reply_lt_5min          -- % conversations < 5min
 from base
 group by 1,2;
+
 
 ## Modèle de données - marts
 <img width="680" height="455" alt="dbdiagram_marts" src="https://github.com/user-attachments/assets/42fe7af7-490b-41eb-acd4-6ae759e31971" />
