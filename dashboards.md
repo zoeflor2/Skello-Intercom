@@ -9,14 +9,9 @@
 - Y a-t-il des thèmatiques significativement moins bien connus/gérés par l'équipe ? Conversations résolues par thème
 
 # Dashboard
-
 <img width="680" height="455" alt="dbdiagram_marts" src="https://github.com/user-attachments/assets/b837a803-8ef7-4404-b315-cb665ed4dbeb" />
 
 <img width="680" height="455" alt="dbdiagram_marts" src="https://github.com/user-attachments/assets/4ff1f459-c467-4b88-8cef-7aa3036e5814" />
-
-
-<img width="687" height="510" alt="Image" src="https://github.com/user-attachments/assets/b837a803-8ef7-4404-b315-cb665ed4dbeb" />
-<img width="650" height="450" alt="Image" src="https://github.com/user-attachments/assets/4ff1f459-c467-4b88-8cef-7aa3036e5814" />
 
 
 
