@@ -194,5 +194,6 @@ left join message_stats m using (conversation_id)
 
 
 ## Modèle de données - marts
+<img width="866" height="480" alt="Image" src="https://github.com/user-attachments/assets/4a7f6454-b1ae-4b1d-a464-cffac359a058" />
 
 <img width="866" height="480" alt="Image" src="https://github.com/user-attachments/assets/0a6ed24e-b247-4156-b4bc-ebd032cc57eb" />
